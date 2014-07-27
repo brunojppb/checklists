@@ -6,8 +6,14 @@
 //  Copyright (c) 2014 Bruno Paulino. All rights reserved.
 //
 
+#import "ChecklistItem.h"
 #import <UIKit/UIKit.h>
+#import "ItemDetailViewController.h"
 
-@interface CheckListViewController : UIViewController
+@class CheckList;
+
+@interface CheckListViewController : UITableViewController <ItemDetailViewControllerDelegate>
+
+@property (nonatomic, strong) CheckList *checkList;
 
 @end
