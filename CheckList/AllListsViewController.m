@@ -29,6 +29,19 @@
     // Dispose of any resources that can be recreated.
 }
 
+-(void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    
+    //lets try to see if the user was seeing one of the checklists
+    self.navigationController.delegate = self;
+    NSInteger index = [_dataModel indexOfSelectedChecklist];
+    //if the user was seeing semthing, let perform show the last checklist that he has seen.
+    if ((index >= 0) && (index < [_dataModel.lists count])) {
+        CheckList *checklist = [_dataModel.lists objectAtIndex:index];
+        [self performSegueWithIdentifier:@"ShowCheckList" sender:checklist];
+    }
+}
+
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -60,6 +73,9 @@
 }
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    
+    //save the last checklist what the user was seeing
+    [_dataModel setIndexOfSelectedCheckList:indexPath.row];
 
     CheckList *checklist = _dataModel.lists[indexPath.row];
     
@@ -133,6 +149,16 @@
     NSArray *indexPaths = @[indexPath];
     [tableView deleteRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationFade];
 }
+
+//=====================================================
+//UInavigationController Delegate
+//
+-(void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated{
+    if (viewController == self) {
+        [_dataModel setIndexOfSelectedCheckList:-1];
+    }
+}
+
 @end
 
 
