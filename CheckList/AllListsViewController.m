@@ -42,6 +42,11 @@
     }
 }
 
+-(void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    [self.tableView reloadData];
+}
+
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -62,13 +67,23 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     
     if (cell == nil) {
-        cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+        cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
     }
     
     CheckList *checkList = [_dataModel.lists objectAtIndex:indexPath.row];
     cell.textLabel.text = checkList.name;
     cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
-    
+    if([checkList.items count] == 0){
+        cell.detailTextLabel.text = @"No Items";
+    }
+    else{
+        if ([checkList countUncheckedItems] == 0) {
+            cell.detailTextLabel.text = @"All Done!";
+        }
+        else{
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"%d remaining", [checkList countUncheckedItems]];
+        }
+    }
     return cell;
 }
 
@@ -119,6 +134,9 @@
     NSArray *indexPaths = @[indexPath];
     [self.tableView insertRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationMiddle];
     
+    [_dataModel sortChecklists];
+    [self.tableView reloadData];
+    
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -129,6 +147,9 @@
     
     UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
     cell.textLabel.text = checklist.name;
+    
+    [_dataModel sortChecklists];
+    [self.tableView reloadData];
     
     [self dismissViewControllerAnimated:YES completion:nil];
 

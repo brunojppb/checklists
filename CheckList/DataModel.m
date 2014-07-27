@@ -75,6 +75,14 @@
     }
 }
 
+-(void)sortChecklists{
+    [_lists sortUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        CheckList *one = obj1;
+        CheckList *two = obj2;
+        return [one.name localizedStandardCompare:two.name];
+    }];
+}
+
 -(NSInteger)indexOfSelectedChecklist{
     return [[NSUserDefaults standardUserDefaults]integerForKey:@"ChecklistIndex"];
 }
