@@ -13,13 +13,22 @@
 
 @end
 
-@implementation ListDetailViewController
+@implementation ListDetailViewController{
+    NSString *_iconName;
+}
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
     if (self) {
         // Custom initialization
+    }
+    return self;
+}
+
+-(id)initWithCoder:(NSCoder *)aDecoder{
+    if ((self = [super initWithCoder:aDecoder])) {
+        _iconName = @"Folder";
     }
     return self;
 }
@@ -31,7 +40,10 @@
         self.title = @"Edit Checklist";
         _textField.text = _checkListToEdit.name;
         _doneBarButton.enabled = YES;
+        _iconName = _checkListToEdit.iconName;
     }
+    
+    _IconImageView.image = [UIImage imageNamed:_iconName];
 }
 
 -(void) viewWillAppear:(BOOL)animated{
@@ -54,17 +66,23 @@
         
         CheckList *checklist = [[CheckList alloc]init];
         checklist.name = _textField.text;
+        checklist.iconName = _iconName;
         
         [_delegate listDetailViewController:self didFinishAddingCheckList:checklist];
     }
     else{
         _checkListToEdit.name = _textField.text;
+        _checkListToEdit.iconName = _iconName;
         [_delegate listDetailViewController:self didFinishEditingCheckList:_checkListToEdit];
     }
 }
 
 -(NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-    return nil;
+    if (indexPath.section == 1) {
+        return indexPath;
+    }else{
+        return nil;
+    }
 }
 
 -(BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string{
@@ -73,6 +91,24 @@
     _doneBarButton.enabled = ([newText length] > 0);
     return YES;
 }
+
+//====================================================
+//Prepare for segue and set the delegate
+-(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
+    if ([segue.identifier isEqualToString:@"PickIcon"]) {
+        IconPickerViewController *controller = segue.destinationViewController;
+        controller.delegate = self;
+    }
+}
+
+//====================================================
+//IconPickerViewControllerDelegate - Manage the icon messagem
+-(void)iconPicker:(IconPickerViewController *)picker didPickIcon:(NSString *)iconName{
+    _iconName = iconName;
+    _IconImageView.image = [UIImage imageNamed:_iconName];
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
 
 
 @end

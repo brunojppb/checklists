@@ -63,7 +63,7 @@
 }
 
 -(void)loadCheckLists{
-    NSLog(@"Path: %@", [self dataFilePath]);
+    //NSLog(@"Path: %@", [self dataFilePath]);
     NSString *path = [self dataFilePath];
     if ([[NSFileManager defaultManager]fileExistsAtPath:path]) {
         NSData *data = [[NSData alloc]initWithContentsOfFile:path];
